@@ -227,17 +227,17 @@ std::tuple<double, double, double, double> State::lexicographic_objective_()
   // (objective value 0 if true, value of lowest difference if false)
   // 3. Number of connections
   // 4. Sum of pressure differences
-  auto worstDiff = 0.0;
+  auto worst_diff = 0.0;
   auto sum = 0.0;
   auto all_within_tolerance = true;
   for (const auto& t : targets_) {
     const auto diff = t.max_pressure - t.pressure;
     all_within_tolerance &= diff <= upper_pressure_tolerance_;
-    worstDiff = std::max(worstDiff, diff);
+    worst_diff = std::max(worst_diff, diff);
     sum += diff;
   }
   const auto val1 = all_within_tolerance ? 0.0 : 1.0;
-  const auto val2 = worstDiff <= lower_pressure_tolerance_ ? 0.0 : worstDiff;
+  const auto val2 = worst_diff <= lower_pressure_tolerance_ ? 0.0 : worst_diff;
   const auto val3 = static_cast<double>(donor_events_.size());
   const auto val4 = sum;
 
