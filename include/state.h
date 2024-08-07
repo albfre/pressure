@@ -2,27 +2,34 @@
 
 #include <stddef.h>
 
+#include <deque>
 #include <iostream>
 #include <tuple>
 #include <vector>
 
 namespace PressureOptimization {
+struct Tube {
+  double volume;
+  double pressure;
+  double max_pressure = 0.0;
+  size_t num_of_connections = 0;
+  auto operator<=>(const Tube&) const = default;
+  bool is_approximately_equal_to(const Tube& other,
+                                 const double volume_tolerance = 0.1,
+                                 const double pressure_tolerance = 1.0) const {
+    return std::abs(volume - other.volume) < volume_tolerance &&
+           std::abs(pressure - other.pressure) < pressure_tolerance;
+  }
+
+  void print(const size_t i) const {
+    std::cout << i << ". (volume, pressure, max pressure): " << volume << ", "
+              << pressure << ", " << max_pressure << std::endl;
+  }
+};
 class State {
   using ObjectiveValue = std::tuple<double, double, double, double>;
 
-  struct Tube_ {
-    double volume;
-    double pressure;
-    double max_pressure;
-    size_t num_of_connections;
-    auto operator<=>(const Tube_&) const = default;
-
-    void print(const size_t i) const {
-      std::cout << i << ". (volume, pressure, max pressure): " << volume << ", "
-                << pressure << ", " << max_pressure << std::endl;
-    }
-  };
-
+ private:
   struct DonationEvent_ {
     size_t donor_index;
     size_t target_index;
@@ -35,9 +42,7 @@ class State {
   };
 
  public:
-  void add_target(const double volume, const double pressure,
-                  const double max_pressure);
-  void add_donor(const double volume, const double pressure);
+  State(std::vector<Tube> targets, std::vector<Tube> donors);
   bool is_worse_than(const State& other) const;
   bool is_admissible(const size_t donor_index, const size_t target_index) const;
   void apply(const size_t donor_index, const size_t target_index);
@@ -52,8 +57,7 @@ class State {
   size_t hash() const;
 
  private:
-  double unbounded_pressure_after_(const Tube_& donor,
-                                   const Tube_& target) const;
+  double unbounded_pressure_after_(const Tube& donor, const Tube& target) const;
   double objective_value_(ObjectiveValue value) const;
   std::tuple<double, double, double, double> lexicographic_objective_() const;
 
@@ -64,9 +68,10 @@ class State {
   size_t max_num_of_donor_connections_ = 2;
   size_t max_num_of_target_connections_ = 3;
 
-  std::vector<Tube_> targets_;
-  std::vector<Tube_> donors_;
+  std::vector<Tube> targets_;
+  std::vector<Tube> donors_;
   std::vector<DonationEvent_> donor_events_;
+  std::vector<std::deque<bool>> are_donors_equivalent_from_start_;
 };
 }  // namespace PressureOptimization
 

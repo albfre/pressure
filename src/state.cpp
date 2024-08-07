@@ -6,14 +6,18 @@
 #include <ranges>
 
 namespace PressureOptimization {
-
-void State::add_target(const double volume, const double pressure,
-                       const double max_pressure) {
-  targets_.emplace_back(volume, pressure, max_pressure);
-}
-
-void State::add_donor(const double volume, const double pressure) {
-  donors_.emplace_back(volume, pressure, pressure);
+State::State(std::vector<Tube> targets, std::vector<Tube> donors)
+    : targets_(std::move(targets)),
+      donors_(std::move(donors)),
+      are_donors_equivalent_from_start_(donors_.size(),
+                                        std::deque<bool>(donors_.size())) {
+  for (size_t i = 0; i < donors_.size(); ++i) {
+    for (size_t j = i; j < donors_.size(); ++j) {
+      are_donors_equivalent_from_start_.at(i).at(j) =
+          are_donors_equivalent_from_start_.at(j).at(i) =
+              donors_.at(i).is_approximately_equal_to(donors_.at(j));
+    }
+  }
 }
 
 bool State::is_worse_than(const State& other) const {
@@ -48,6 +52,16 @@ bool State::is_admissible(const size_t donor_index,
     if (donor_index != previous_donor_index &&
         target_index < previous_target_index) {
       return false;
+    }
+  }
+
+  // If two donors are equal, start with the one with lowest index
+  if (donor_index != 0 && donors_.at(donor_index).num_of_connections == 0) {
+    for (size_t i = 0; i < donor_index; ++i) {
+      if (are_donors_equivalent_from_start_.at(donor_index).at(i) &&
+          donors_.at(i).num_of_connections == 0) {
+        return false;
+      }
     }
   }
 
@@ -193,8 +207,8 @@ size_t State::hash() const {
   return res;
 }
 
-double State::unbounded_pressure_after_(const Tube_& donor,
-                                        const Tube_& target) const {
+double State::unbounded_pressure_after_(const Tube& donor,
+                                        const Tube& target) const {
   return (target.volume * target.pressure + donor.volume * donor.pressure) /
          (target.volume + donor.volume);
 }

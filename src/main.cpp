@@ -20,6 +20,7 @@ size_t max_num_of_tests = static_cast<size_t>(1e10);
 }
 
 using State = PressureOptimization::State;
+using Tube = PressureOptimization::Tube;
 
 void solve(State& state, State& best_state, size_t& num_tests,
            std::unordered_set<size_t>& tested, size_t depth = 3) {
@@ -76,50 +77,39 @@ void solve_with_depth(State initial_state, State& best_state, size_t depth) {
 }
 
 int main() {
-  State state;
-  if (true) {
-    state.add_target(12, 100, 200);
-    state.add_target(12, 80, 200);
-    state.add_target(8, 70, 300);
-    state.add_target(8, 100, 300);
-    state.add_target(24, 80, 232);
-
-    state.add_donor(12, 232);
-    state.add_donor(12, 232);
-    state.add_donor(12, 232);
-    state.add_donor(12, 232);
-    state.add_donor(10, 300);
-    state.add_donor(10, 300);
+  if (false) {
+    auto targets = std::vector<Tube>{{12, 100, 200},
+                                     {12, 80, 200},
+                                     {8, 70, 300},
+                                     {8, 100, 300},
+                                     {24, 80, 232}};
+    auto donors = std::vector<Tube>{{12, 232}, {12, 232}, {12, 232},
+                                    {12, 232}, {10, 300}, {10, 300}};
+    State state(std::move(targets), std::move(donors));
     std::cout << "Initial state:" << std::endl;
     state.print();
     auto best_state = state;
-    solve_with_depth(state, best_state, 8);  // 67 in 2.8 sec, 63227998
-    // solve_with_depth(state, best_state, 9); // 58 in 10 sec, 205034831
-    // solve_with_depth(state, best_state, 10); // 51 in 28 sec
-    // solve_with_depth(state, best_state, 11); // 46.96 in 58 sec
-    // solve_with_depth(state, best_state, 12); // 44.78 in 82 sec
+    // solve_with_depth(state, best_state, 8);  // 67 in 0.1 sec, 63227998
+    // solve_with_depth(state, best_state, 9);  // 58 in 0.4 sec, 205034831
+    // solve_with_depth(state, best_state, 10);  // 51 in 1 sec
+    // solve_with_depth(state, best_state, 11);  // 46.96 in 2 sec
+    solve_with_depth(state, best_state, 12);  // 44.78 in 3 sec
   } else {
-    state.add_target(12, 100, 200);
-    state.add_target(12, 80, 200);
-    state.add_target(8, 70, 300);
-    state.add_target(8, 100, 300);
-    state.add_target(12, 80, 232);
-    state.add_target(12, 70, 232);
+    auto targets =
+        std::vector<Tube>{{12, 100, 200}, {12, 80, 200}, {8, 70, 300},
+                          {8, 100, 300},  {12, 80, 232}, {12, 70, 232}};
 
-    state.add_donor(12, 232);
-    state.add_donor(12, 232);
-    state.add_donor(12, 232);
-    state.add_donor(12, 232);
-    state.add_donor(10, 300);
-    state.add_donor(10, 300);
+    auto donors = std::vector<Tube>{{12, 232}, {12, 232}, {12, 232},
+                                    {12, 232}, {10, 300}, {10, 300}};
+    State state(std::move(targets), std::move(donors));
     std::cout << "Initial state:" << std::endl;
     state.print();
     auto best_state = state;
-    solve_with_depth(state, best_state, 7);  // 88.8 in 3.7 s
-    // solve_with_depth(state, best_state, 8); // 81 in 23 s
-    // solve_with_depth(state, best_state, 9); // 76 in 123 s
-    // solve_with_depth(state, best_state, 10);
-    // solve_with_depth(state, best_state, 11);
-    // solve_with_depth(state, best_state, 12);
+    // solve_with_depth(state, best_state, 7);  // 88.8 in 0.16 s
+    // solve_with_depth(state, best_state, 8);  // 81 in 0.9 s
+    solve_with_depth(state, best_state, 9);  // 76 in 4.3 s
+    // solve_with_depth(state, best_state, 10); // 58.7 in 16 s
+    // solve_with_depth(state, best_state, 11); // 51.5 in 48 s
+    // solve_with_depth(state, best_state, 12); // 47.1 in 102 s
   }
 }
