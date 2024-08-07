@@ -1,2 +1,2 @@
 # Pressure
-Optimization of repressuring order for scuba diving tubes.
+Optimize the order in which to repressurize scuba diving tubes.

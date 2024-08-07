@@ -49,7 +49,7 @@ class State {
   void clear_events();
   bool operator<(const State& other) const;
   bool operator==(const State& other) const;
-  size_t operator()() const;
+  size_t hash() const;
 
  private:
   double unbounded_pressure_after_(const Tube_& donor,
@@ -73,6 +73,6 @@ class State {
 template <>
 struct std::hash<PressureOptimization::State> {
   std::size_t operator()(const PressureOptimization::State& k) const {
-    return k();
+    return k.hash();
   }
 };

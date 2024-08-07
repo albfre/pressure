@@ -5,11 +5,30 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+# Set a default build type if none was specified
+if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
+  message(STATUS "Setting build type to 'RelWithDebInfo' as none was specified.")
+  set(CMAKE_BUILD_TYPE RelWithDebInfo CACHE STRING "Choose the type of build." FORCE)
+  # Set the possible values of build type for cmake-gui
+  set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release" "MinSizeRel" "RelWithDebInfo")
+endif()
+
 # Add compiler warnings
 if(MSVC)
     add_compile_options(/W4 /WX)
 else()
     add_compile_options(-Wall -Wextra -Wpedantic -Werror)
+endif()
+
+# Optimization flags
+if(MSVC)
+    set(CMAKE_CXX_FLAGS_DEBUG "/Od /Zi /D_DEBUG /DDEBUG")
+    set(CMAKE_CXX_FLAGS_RELEASE "/O2 /DNDEBUG")
+    set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "/O2 /Zi /DNDEBUG")
+else()
+    set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g -DDEBUG")
+    set(CMAKE_CXX_FLAGS_RELEASE "-O3 -march=native -DNDEBUG")
+    set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O2 -g -march=native -DNDEBUG")
 endif()
 
 # Define source files
@@ -33,11 +52,12 @@ target_include_directories(pressure_optimization
         ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 
-# Enable link time optimization
+# Enable link time optimization for Release and RelWithDebInfo builds
 include(CheckIPOSupported)
 check_ipo_supported(RESULT supported OUTPUT error)
 if(supported)
-    set_property(TARGET pressure_optimization PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+    set_property(TARGET pressure_optimization PROPERTY INTERPROCEDURAL_OPTIMIZATION_RELEASE TRUE)
+    set_property(TARGET pressure_optimization PROPERTY INTERPROCEDURAL_OPTIMIZATION_RELWITHDEBINFO TRUE)
 else()
     message(WARNING "IPO is not supported: ${error}")
 endif()

@@ -72,7 +72,7 @@ void solve_with_depth(State initial_state, State& best_state, size_t depth) {
   std::cout
       << "Elapsed time: "
       << std::chrono::duration_cast<std::chrono::milliseconds>(t1 - t0).count()
-      << std::endl;
+      << " ms" << std::endl;
 }
 
 int main() {

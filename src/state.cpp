@@ -105,12 +105,12 @@ void State::apply(const size_t donor_index, const size_t target_index) {
         donor.volume;
   }
 
-  auto& donorVar = donors_.at(donor_index);
-  auto& targetVar = targets_.at(target_index);
-  donorVar.pressure = donor_pressure_after;
-  donorVar.num_of_connections += 1;
-  targetVar.pressure = target_pressure_after;
-  targetVar.num_of_connections += 1;
+  auto& donor_var = donors_.at(donor_index);
+  auto& target_var = targets_.at(target_index);
+  donor_var.pressure = donor_pressure_after;
+  donor_var.num_of_connections += 1;
+  target_var.pressure = target_pressure_after;
+  target_var.num_of_connections += 1;
   const auto objective = lexicographic_objective_();
 
   donor_events_.emplace_back(donor_index, target_index, donor_pressure_before,
@@ -178,7 +178,7 @@ bool State::operator==(const State& other) const {
   return std::tie(targets_, donors_) == std::tie(other.targets_, other.donors_);
 }
 
-size_t State::operator()() const {
+size_t State::hash() const {
   size_t res = 17;
 
   for (const auto& ts : {targets_, donors_}) {
