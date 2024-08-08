@@ -52,16 +52,8 @@ void solve(State& state, State& best_state, size_t& num_tests,
   }
 }
 
-auto start_solve(State state, const size_t begin_target,
-                 const size_t end_target, const size_t depth) {
-  auto best_state = state;
-  size_t num_tests = 0;
-  solve(state, best_state, num_tests, begin_target, end_target, depth);
-  return std::tuple{state, num_tests};
-}
-
-void solve_with_depth(State& initial_state, const size_t depth,
-                      size_t num_chunks = 1) {
+State start_solve(const State initial_state, const size_t depth,
+                  size_t num_chunks = 1) {
   std::cout << std::endl
             << "Solving with maximum number of connections: " << depth
             << std::endl;
@@ -80,9 +72,15 @@ void solve_with_depth(State& initial_state, const size_t depth,
     const auto target_end_index =
         target_begin_index + targets_per_chunk +
         (chunk_index + 1 == num_chunks ? remaining_targets : 0);
-    std::tie(best_states[chunk_index], num_tests_vec[chunk_index]) =
-        start_solve(initial_state, target_begin_index, target_end_index, depth);
+    auto state = initial_state;
+    auto best_state = initial_state;
+    size_t num_tests = 0;
+    solve(state, best_state, num_tests, target_begin_index, target_end_index,
+          depth);
+    best_states[chunk_index] = std::move(best_state);
+    num_tests_vec[chunk_index] = num_tests;
   }
+
   const auto best_state =
       *std::ranges::min_element(best_states, [](const auto& a, const auto& b) {
         return a.objective_value() < b.objective_value();
@@ -98,11 +96,12 @@ void solve_with_depth(State& initial_state, const size_t depth,
       << "Elapsed time: "
       << std::chrono::duration_cast<std::chrono::milliseconds>(t1 - t0).count()
       << " ms" << std::endl;
+  return best_state;
 }
 
 int main() {
   omp_set_num_threads(2);
-  if (false) {
+  if (true) {
     auto targets = std::vector<Tube>{{12, 100, 200},
                                      {12, 80, 200},
                                      {8, 70, 300},
@@ -117,7 +116,7 @@ int main() {
     // solve_with_depth(state, best_state, 9);  // 58 in 0.4 sec, 205034831
     // solve_with_depth(state, best_state, 10);  // 51 in 1 sec
     // solve_with_depth(state, best_state, 11);  // 46.96 in 2 sec
-    solve_with_depth(state, 12);  // 44.78 in 3 sec
+    start_solve(state, 12, 2);  // 44.78 in 3 sec
   } else {
     auto targets =
         std::vector<Tube>{{12, 100, 200}, {12, 80, 200}, {8, 70, 300},
@@ -131,7 +130,7 @@ int main() {
     // solve_with_depth(state, best_state, 7);  // 88.8 in 0.16 s
     // solve_with_depth(state, best_state, 8);  // 81 in 0.9 s
     // solve_with_depth(state, best_state, 9);  // 76 in 4.3 s
-    solve_with_depth(state, 10, 2);  // 58.7 in 16 s
+    start_solve(state, 10, 2);  // 58.7 in 16 s
     // solve_with_depth(state, best_state, 11); // 51.5 in 48 s
     // solve_with_depth(state, best_state, 12);  // 47.1 in 102 s
   }
