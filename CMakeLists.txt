@@ -31,6 +31,9 @@ else()
     set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O2 -g -march=native -DNDEBUG")
 endif()
 
+# Find OpenMP package
+find_package(OpenMP REQUIRED)
+
 # Define source files
 set(SOURCES
     src/main.cpp
@@ -51,6 +54,9 @@ target_include_directories(pressure_optimization
         ${CMAKE_CURRENT_SOURCE_DIR}/include
         ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
+
+# Link libraries and add OpenMP flags
+target_link_libraries(pressure_optimization PRIVATE OpenMP::OpenMP_CXX)
 
 # Enable link time optimization for Release and RelWithDebInfo builds
 include(CheckIPOSupported)
