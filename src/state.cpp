@@ -230,6 +230,9 @@ std::tuple<double, double, double, double> State::lexicographic_objective_()
   auto worst_diff = 0.0;
   auto sum = 0.0;
   auto all_within_tolerance = true;
+
+  // For performance reason, only one pass over the targets is performed instead
+  // of using standard algorithms
   for (const auto& t : targets_) {
     const auto diff = t.max_pressure - t.pressure;
     all_within_tolerance &= diff <= upper_pressure_tolerance_;

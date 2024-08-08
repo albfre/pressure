@@ -25,8 +25,9 @@ using State = PressureOptimization::State;
 using Tube = PressureOptimization::Tube;
 
 void solve(State& state, State& best_state, size_t& num_tests,
-           const size_t begin_target, const size_t end_target,
-           const size_t depth) {
+           const size_t depth,
+           std::optional<std::pair<size_t, size_t>> target_index_range =
+               std::nullopt) {
   if (depth == 0) {
     return;
   }
@@ -36,7 +37,9 @@ void solve(State& state, State& best_state, size_t& num_tests,
   if (state.is_worse_than(best_state)) {
     return;
   }
-  for (size_t ti = begin_target; ti < end_target; ++ti) {
+  const auto [target_begin_index, target_end_index] =
+      target_index_range.value_or(std::pair{0, state.num_targets()});
+  for (size_t ti = target_begin_index; ti < target_end_index; ++ti) {
     for (size_t di = 0; di < state.num_donors(); ++di) {
       if (!state.is_admissible(di, ti)) {
         continue;
@@ -46,7 +49,9 @@ void solve(State& state, State& best_state, size_t& num_tests,
         best_state = state;
       }
       ++num_tests;
-      solve(state, best_state, num_tests, 0, state.num_targets(), depth - 1);
+
+      // Restricted target index range should only be used in outermost call
+      solve(state, best_state, num_tests, depth - 1);
       state.unapply_last_event();
     }
   }
@@ -75,8 +80,8 @@ State start_solve(const State initial_state, const size_t depth,
     auto state = initial_state;
     auto best_state = initial_state;
     size_t num_tests = 0;
-    solve(state, best_state, num_tests, target_begin_index, target_end_index,
-          depth);
+    solve(state, best_state, num_tests, depth,
+          std::pair{target_begin_index, target_end_index});
     best_states[chunk_index] = std::move(best_state);
     num_tests_vec[chunk_index] = num_tests;
   }
