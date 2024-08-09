@@ -3,14 +3,7 @@
 
 #include <omp.h>
 
-#include <algorithm>
-#include <cassert>
-#include <chrono>
 #include <iostream>
-#include <map>
-#include <numeric>
-#include <set>
-#include <utility>
 #include <vector>
 
 #include "solver.h"

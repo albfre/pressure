@@ -2,7 +2,6 @@
 
 #include <stddef.h>
 
-#include <memory>
 #include <optional>
 
 #include "state.h"
