@@ -38,11 +38,13 @@ find_package(OpenMP REQUIRED)
 set(SOURCES
     src/main.cpp
     src/state.cpp
+    src/solver.cpp
 )
 
 # Define header files
 set(HEADERS
     include/state.h
+    include/solver.h
 )
 
 # Add the executable
