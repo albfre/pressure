@@ -1,0 +1,175 @@
+body {
+    font-family: 'Arial', sans-serif;
+    line-height: 1.6;
+    color: #E6E6E6;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    background: linear-gradient(135deg, #001526 0%, #023E58 50%, #0A617A 100%);
+    min-height: 100vh;
+}
+
+h1,
+h2,
+h3 {
+    color: #FF69B4;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.input-section {
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.tubes-container {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.tube-column {
+    flex: 1;
+    min-width: 300px;
+}
+
+.tube-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 10px;
+}
+
+.tube-table th {
+    text-align: left;
+    padding: 10px;
+    background-color: rgba(0, 255, 255, 0.2);
+    color: #FF69B4;
+}
+
+.tube-table td {
+    padding: 10px;
+    background-color: rgba(0, 255, 255, 0.1);
+}
+
+.tube-table tr {
+    transition: all 0.3s ease;
+}
+
+.tube-table tr:hover {
+    transform: translateY(-0px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+input[type="number"] {
+    width: 50px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid #00FFFF;
+    color: #E6E6E6;
+    padding: 5px;
+    border-radius: 5px;
+}
+
+button {
+    background-color: #00FFFF;
+    color: #00203FFF;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-radius: 5px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+button:hover {
+    background-color: #FF69B4;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.remove-tube {
+    background-color: #FF1493;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 25px;
+    height: 25px;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    padding: 0;
+}
+
+.remove-tube:hover {
+    background-color: #FF69B4;
+    transform: scale(1.1);
+}
+
+#results {
+    background-color: rgba(0, 255, 255, 0.1);
+    padding: 20px;
+    border-radius: 10px;
+    margin-top: 20px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.hidden {
+    display: none;
+}
+
+.event {
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.solver-params {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.solver-params label {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    color: #00FFFF;
+    font-weight: bold;
+}
+
+.solver-params input {
+    margin-top: 5px;
+}
+
+#progress {
+    margin-top: 20px;
+    background-color: rgba(0, 255, 255, 0.1);
+    padding: 20px;
+    border-radius: 10px;
+}
+
+#progressBar {
+    height: 20px;
+    background-color: #00FFFF;
+    width: 0;
+    transition: width 0.5s ease-in-out;
+}
+
+#currentBest {
+    margin-top: 10px;
+    font-weight: bold;
+    color: #FF69B4;
+}

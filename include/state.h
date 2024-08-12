@@ -26,32 +26,37 @@ struct Tube {
               << pressure << ", " << max_pressure << std::endl;
   }
 };
+
+using ObjectiveValue = std::tuple<double, double, double, double>;
+
+struct DonationEvent {
+  size_t donor_index;
+  size_t target_index;
+  double donor_pressure_before;
+  double donor_pressure_after;
+  double target_pressure_before;
+  double target_pressure_after;
+  ObjectiveValue lexicographic_objective_value;
+  double objective_value;
+};
+
 class State {
-  using ObjectiveValue = std::tuple<double, double, double, double>;
-
- private:
-  struct DonationEvent_ {
-    size_t donor_index;
-    size_t target_index;
-    double donor_pressure_before;
-    double donor_pressure_after;
-    double target_pressure_before;
-    double target_pressure_after;
-    ObjectiveValue lexicographic_objective_value;
-    double objective_value;
-  };
-
  public:
   State(std::vector<Tube> targets, std::vector<Tube> donors);
   bool is_worse_than(const State& other) const;
   bool is_admissible(const size_t donor_index, const size_t target_index) const;
   void apply(const size_t donor_index, const size_t target_index);
   void unapply_last_event();
+  void set_num_tests(size_t num_tests);
+  size_t num_tests() const;
   double objective_value() const;
   size_t num_targets() const;
   size_t num_donors() const;
   void print() const;
-  void clear_events();
+  const std::vector<DonationEvent>& get_donation_events() const;
+  double get_target_pressure(size_t target_index) const;
+  double get_donor_pressure(size_t donor_index) const;
+
   bool operator<(const State& other) const;
   bool operator==(const State& other) const;
   size_t hash() const;
@@ -70,8 +75,9 @@ class State {
 
   std::vector<Tube> targets_;
   std::vector<Tube> donors_;
-  std::vector<DonationEvent_> donor_events_;
+  std::vector<DonationEvent> donation_events_;
   std::vector<std::deque<bool>> are_donors_equivalent_from_start_;
+  size_t num_tests_ = 0;
 };
 }  // namespace PressureOptimization
 

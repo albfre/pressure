@@ -21,14 +21,14 @@ State::State(std::vector<Tube> targets, std::vector<Tube> donors)
 }
 
 bool State::is_worse_than(const State& other) const {
-  if (other.donor_events_.empty()) {
+  if (other.donation_events_.empty()) {
     return false;
   }
 
   if (std::ranges::any_of(
           targets_,
           [&, other_worst = std::get<1>(
-                  other.donor_events_.back().lexicographic_objective_value)](
+                  other.donation_events_.back().lexicographic_objective_value)](
               const auto& t) {
             return t.num_of_connections == max_num_of_target_connections_ &&
                    (t.max_pressure - t.pressure) > other_worst;
@@ -42,9 +42,9 @@ bool State::is_admissible(const size_t donor_index,
                           const size_t target_index) const {
   // For independent events, enforce an ordering to avoid multiple sequences
   // with equivalent result
-  if (!donor_events_.empty()) {
-    const auto previous_donor_index = donor_events_.back().donor_index;
-    const auto previous_target_index = donor_events_.back().target_index;
+  if (!donation_events_.empty()) {
+    const auto previous_donor_index = donation_events_.back().donor_index;
+    const auto previous_target_index = donation_events_.back().target_index;
 
     // The sequence of donations [D1 -> T2, D2 -> T1] is equivalent to [D2 ->
     // T1, D1 -> T2]. Only perform the sequence in which the target index is
@@ -57,8 +57,10 @@ bool State::is_admissible(const size_t donor_index,
 
   // If two donors are equal, start with the one with lowest index
   if (donor_index != 0 && donors_.at(donor_index).num_of_connections == 0) {
+    const auto& are_donors_equivalent =
+        are_donors_equivalent_from_start_.at(donor_index);
     for (size_t i = 0; i < donor_index; ++i) {
-      if (are_donors_equivalent_from_start_.at(donor_index).at(i) &&
+      if (are_donors_equivalent.at(i) &&
           donors_.at(i).num_of_connections == 0) {
         return false;
       }
@@ -127,31 +129,36 @@ void State::apply(const size_t donor_index, const size_t target_index) {
   target_var.num_of_connections += 1;
   const auto objective = lexicographic_objective_();
 
-  donor_events_.emplace_back(donor_index, target_index, donor_pressure_before,
-                             donor_pressure_after, target_pressure_before,
-                             target_pressure_after, objective,
-                             objective_value_(objective));
+  donation_events_.emplace_back(donor_index, target_index,
+                                donor_pressure_before, donor_pressure_after,
+                                target_pressure_before, target_pressure_after,
+                                objective, objective_value_(objective));
+  ++num_tests_;
 }
 
 void State::unapply_last_event() {
-  assert(!donor_events_.empty());
-  const auto& donor_event = donor_events_.back();
-  auto& donor = donors_.at(donor_event.donor_index);
-  donor.pressure = donor_event.donor_pressure_before;
+  assert(!donation_events_.empty());
+  const auto& donation_event = donation_events_.back();
+  auto& donor = donors_.at(donation_event.donor_index);
+  donor.pressure = donation_event.donor_pressure_before;
   assert(donor.num_of_connections > 0);
   donor.num_of_connections -= 1;
-  auto& target = targets_.at(donor_event.target_index);
-  target.pressure = donor_event.target_pressure_before;
+  auto& target = targets_.at(donation_event.target_index);
+  target.pressure = donation_event.target_pressure_before;
   assert(target.num_of_connections > 0);
   target.num_of_connections -= 1;
-  donor_events_.pop_back();
+  donation_events_.pop_back();
 }
 
+void State::set_num_tests(const size_t num_tests) { num_tests_ = num_tests; }
+
+size_t State::num_tests() const { return num_tests_; }
+
 double State::objective_value() const {
-  if (donor_events_.empty()) {
+  if (donation_events_.empty()) {
     return std::numeric_limits<double>::max();
   }
-  return donor_events_.back().objective_value;
+  return donation_events_.back().objective_value;
 }
 
 size_t State::num_targets() const { return targets_.size(); }
@@ -169,9 +176,9 @@ void State::print() const {
     }
   }
 
-  if (!donor_events_.empty()) {
+  if (!donation_events_.empty()) {
     std::cout << std::endl << "Path:" << std::endl;
-    for (size_t i = 1; const auto& e : donor_events_) {
+    for (size_t i = 1; const auto& e : donation_events_) {
       std::cout << i++ << ". D" << e.donor_index + 1 << " to T"
                 << e.target_index + 1
                 << " (target pressure: " << e.target_pressure_before << " -> "
@@ -180,9 +187,20 @@ void State::print() const {
                 << e.donor_pressure_after << ")" << std::endl;
     }
   }
+  std::cout << "Num tests: " << num_tests_ << std::endl;
 }
 
-void State::clear_events() { donor_events_.clear(); }
+const std::vector<DonationEvent>& State::get_donation_events() const {
+  return donation_events_;
+}
+
+double State::get_target_pressure(const size_t target_index) const {
+  return targets_.at(target_index).pressure;
+}
+
+double State::get_donor_pressure(const size_t donor_index) const {
+  return donors_.at(donor_index).pressure;
+}
 
 bool State::operator<(const State& other) const {
   return std::tie(targets_, donors_) < std::tie(other.targets_, other.donors_);
@@ -241,7 +259,7 @@ std::tuple<double, double, double, double> State::lexicographic_objective_()
   }
   const auto val1 = all_within_tolerance ? 0.0 : 1.0;
   const auto val2 = worst_diff <= lower_pressure_tolerance_ ? 0.0 : worst_diff;
-  const auto val3 = static_cast<double>(donor_events_.size());
+  const auto val3 = static_cast<double>(donation_events_.size());
   const auto val4 = sum;
 
   return {val1, val2, val3, val4};

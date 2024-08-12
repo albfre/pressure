@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pressure optimization solver</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="pressure_optimization_wasm.js"></script>
+    <script src="script.js" defer></script>
+</head>
+
+<body>
+    <h1>Pressure optimization solver</h1>
+
+    <div class="input-section">
+        <div class="tubes-container">
+            <div class="tube-column">
+                <h3>Donor tubes &ensp;<button onclick="addTube('donor', 12, 232)">Add donor</button></h3>
+                <table id="donorInputs" class="tube-table">
+                    <thead>
+                        <tr>
+                            <th>Donor</th>
+                            <th>Volume</th>
+                            <th>Pressure</th>
+                            <th>Final pressure</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+            <div class="tube-column">
+                <h3>Target tubes &ensp; <button onclick="addTube('target', 10, 100, 200)">Add target</button></h3>
+                <table id="targetInputs" class="tube-table">
+                    <thead>
+                        <tr>
+                            <th>Target</th>
+                            <th>Volume</th>
+                            <th>Pressure</th>
+                            <th>Max pressure</th>
+                            <th>Final pressure</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="solver-params">
+            <h3>Max number of steps: <input type="number" id="depthLeft" min="1" max="12" value="8"></h3>
+        </div>
+
+        <button onclick="solveProblem()">Solve</button>
+    </div>
+
+    <div id="progress" style="display: none;">
+        <h3>Solving...</h3>
+        <div id="progressBar"></div>
+        <div id="currentBest"></div>
+    </div>
+
+
+    <div id="results" class="hidden">
+        <h2>Results</h2>
+        <div id="objectiveValue"></div>
+        <div id="finalState"></div>
+        <h3>Donation events</h3>
+        <div id="events"></div>
+    </div>
+
+</body>
+
+</html>
