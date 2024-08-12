@@ -4,7 +4,7 @@ body {
     color: #E6E6E6;
     max-width: 1200px;
     margin: 0 auto;
-    padding: 20px;
+    padding: 10px;
     background: linear-gradient(135deg, #001526 0%, #023E58 50%, #0A617A 100%);
     min-height: 100vh;
 }
@@ -18,9 +18,9 @@ h3 {
 
 .input-section {
     background-color: rgba(255, 255, 255, 0.1);
-    padding: 20px;
-    border-radius: 10px;
-    margin-bottom: 20px;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 10px;
     backdrop-filter: blur(10px);
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
