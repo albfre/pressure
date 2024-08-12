@@ -1,9 +1,10 @@
-let State, Tube, TubeVector, solve;
+let State, Tube, TubeVector, DonationEventVector, solve;
 
 Module.onRuntimeInitialized = function() {
     State = Module.State;
     Tube = Module.Tube;
     TubeVector = Module.TubeVector;
+    DonationEventVector = Module.DonationEventVector;
     solve = Module.solve;
     addTube('donor', 12, 232);
     addTube('donor', 12, 232);
@@ -27,7 +28,7 @@ function addTube(type, volume, pressure, maxPressure = 0) {
 
     const row = table.insertRow();
     row.innerHTML = `
-        <td><span class="tubeName">${type.charAt(0).toUpperCase() + type.slice(1)} ${rowCount}</span></td>
+        <td><span class="tubeName">${type.charAt(0).toUpperCase()}${rowCount}</span></td>
         <td><input type="number" class="volume" value="${volume}"></td>
         <td><input type="number" class="pressure" value="${pressure}"></td>
         ${type === 'target' ? '<td><input type="number" class="maxPressure" value="' + maxPressure + '"></td>' : ''}
@@ -43,6 +44,8 @@ function removeTube(button) {
     updateTubeNumbers(table);
     clearFinalPressure("donor");
     clearFinalPressure("target");
+    const resultsDiv = document.getElementById('results');
+    resultsDiv.classList.add('hidden');
 }
 
 function updateTubeNumbers(table) {
@@ -68,7 +71,7 @@ function solveProblem() {
     
     const initialState = new State(targets, donors);
     const depthLeft = parseInt(document.getElementById('depthLeft').value);
-    const maxTests = 1e9;
+    const maxTests = 1e8;
 
     // Solve the problem
     const state = solve(initialState, depthLeft, maxTests);
@@ -101,9 +104,21 @@ function displayResults(state) {
     const donorRows = document.getElementById("donorInputs").getElementsByTagName('tbody')[0].rows;
     updateFinalPressureRows(donorRows, index => state.get_donor_pressure(index));
 
-    //const resultsDiv = document.getElementById('results');
-    //resultsDiv.classList.remove('hidden');
-    //resultsDiv.innerHTML = result;
+    /*
+    const donationEvents = state.get_donation_events();
+    console.log(typeof donationEvents)
+    var s = " " + donationEvents.length;
+    for (let i = 0; i < donationEvents.length; i++) {
+        const event = donationEvents[i];
+        s += event.donor_index + " ";
+    }
+    console.log(s);
+
+    const resultsDiv = document.getElementById('results');
+    resultsDiv.classList.remove('hidden');
+
+    resultsDiv.innerHTML = s;
+    */
 }
 
 function updateFinalPressureRows(rows, getPressureFunction) {

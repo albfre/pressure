@@ -190,7 +190,7 @@ void State::print() const {
   std::cout << "Num tests: " << num_tests_ << std::endl;
 }
 
-const std::vector<DonationEvent>& State::get_donation_events() const {
+std::vector<DonationEvent> State::get_donation_events() const {
   return donation_events_;
 }
 

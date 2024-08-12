@@ -13,7 +13,7 @@ h1,
 h2,
 h3 {
     color: #FF69B4;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 .input-section {
@@ -47,6 +47,7 @@ h3 {
     padding: 10px;
     background-color: rgba(0, 255, 255, 0.2);
     color: #FF69B4;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 .tube-table td {
@@ -64,12 +65,15 @@ h3 {
 }
 
 input[type="number"] {
-    width: 50px;
+    width: 4ch;
     background-color: rgba(255, 255, 255, 0.1);
     border: 1px solid #00FFFF;
     color: #E6E6E6;
     padding: 5px;
     border-radius: 5px;
+    -webkit-appearance: none;
+    -moz-appearance: textfield;
+    appearance: textfield;
 }
 
 button {

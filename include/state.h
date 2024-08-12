@@ -53,7 +53,7 @@ class State {
   size_t num_targets() const;
   size_t num_donors() const;
   void print() const;
-  const std::vector<DonationEvent>& get_donation_events() const;
+  std::vector<DonationEvent> get_donation_events() const;
   double get_target_pressure(size_t target_index) const;
   double get_donor_pressure(size_t donor_index) const;
 

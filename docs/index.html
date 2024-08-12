@@ -20,10 +20,10 @@
                 <table id="donorInputs" class="tube-table">
                     <thead>
                         <tr>
-                            <th>Donor</th>
-                            <th>Volume</th>
-                            <th>Pressure</th>
-                            <th>Final pressure</th>
+                            <th>Name</th>
+                            <th>Vol.</th>
+                            <th>Pres.</th>
+                            <th>Fin.pres.</th>
                             <th></th>
                         </tr>
                     </thead>
@@ -35,11 +35,11 @@
                 <table id="targetInputs" class="tube-table">
                     <thead>
                         <tr>
-                            <th>Target</th>
-                            <th>Volume</th>
-                            <th>Pressure</th>
-                            <th>Max pressure</th>
-                            <th>Final pressure</th>
+                            <th>Name</th>
+                            <th>Vol.</th>
+                            <th>Pres.</th>
+                            <th>Max pres.</th>
+                            <th>Fin.pres.</th>
                             <th></th>
                         </tr>
                     </thead>
@@ -49,18 +49,11 @@
         </div>
 
         <div class="solver-params">
-            <h3>Max number of steps: <input type="number" id="depthLeft" min="1" max="12" value="8"></h3>
+            <h3>Max no. of steps: <input type="number" id="depthLeft" min="1" max="12" value="8"></h3>
         </div>
 
         <button onclick="solveProblem()">Solve</button>
     </div>
-
-    <div id="progress" style="display: none;">
-        <h3>Solving...</h3>
-        <div id="progressBar"></div>
-        <div id="currentBest"></div>
-    </div>
-
 
     <div id="results" class="hidden">
         <h2>Results</h2>
