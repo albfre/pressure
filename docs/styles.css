@@ -71,6 +71,7 @@ input[type="number"] {
     color: #E6E6E6;
     padding: 5px;
     border-radius: 5px;
+    text-align: right;
     -webkit-appearance: none;
     -moz-appearance: textfield;
     appearance: textfield;
