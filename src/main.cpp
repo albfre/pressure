@@ -20,7 +20,7 @@ int main(int argc, char* argv[]) {
 
   size_t max_depth = 0;
   try {
-    auto max_depth_i = std::stoi(argv[1]);
+    const auto max_depth_i = std::stoi(argv[1]);
     if (max_depth_i <= 0) {
       throw std::out_of_range("max_depth must be positive");
     }
