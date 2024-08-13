@@ -12,7 +12,23 @@ using Tube = PressureOptimization::Tube;
 using State = PressureOptimization::State;
 using Solver = PressureOptimization::Solver;
 
-int main() {
+int main(int argc, char* argv[]) {
+  if (argc != 2) {
+    std::cerr << "Usage: " << argv[0] << " <max_depth>" << std::endl;
+    return 1;
+  }
+
+  int max_depth;
+  try {
+    max_depth = std::stoi(argv[1]);
+    if (max_depth <= 0) {
+      throw std::out_of_range("max_depth must be positive");
+    }
+  } catch (const std::exception& e) {
+    std::cerr << "Error parsing max_depth: " << e.what() << std::endl;
+    return 1;
+  }
+
   std::cout << std::endl << "Solving" << std::endl;
   const auto t0 = std::chrono::high_resolution_clock::now();
   auto targets = std::vector<Tube>();
@@ -52,7 +68,6 @@ int main() {
   State state(std::move(targets), std::move(donors));
   std::cout << "Initial state:" << std::endl;
   state.print();
-  auto max_depth = 8;
   auto best_state = Solver::solve(std::move(state), max_depth);
 
   const auto t1 = std::chrono::high_resolution_clock::now();
