@@ -90,7 +90,7 @@ function clearFinalPressure(type) {
 }
 
 function clearResultsTable() {
-    document.querySelector('#connectionsToMake tbody').innerHTML = '';
+    document.querySelector('#connectionSequence tbody').innerHTML = '';
 }
 
 function solveProblem() {
@@ -133,7 +133,7 @@ function displayResults(state) {
 
     // Display list of donation events in results table
     const donationEvents = state.get_donation_events();
-    const table = document.querySelector('#connectionsToMake tbody');
+    const table = document.querySelector('#connectionSequence tbody');
     for (let i = 0; i < donationEvents.size(); i++) {
         const event = donationEvents.get(i);
         const donorNumber = event.donor_index + 1;
