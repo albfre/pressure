@@ -144,7 +144,7 @@ function displayResults(state) {
         const targetPressureAfter = event.target_pressure_after.toFixed(1);
         const row = table.insertRow();
         row.innerHTML = `
-            <td><span class="tubeName">D${donorNumber} &rarr; T${targetNumber}</span></td>
+            <td><span class="tubeName">${i + 1}. D${donorNumber} &rarr; T${targetNumber}</span></td>
             <td><span class="tubeName">${donorPressureBefore}</span></td>
             <td><span class="tubeName">${donorPressureAfter}</span></td>
             <td><span class="tubeName">${targetPressureBefore}</span></td>
