@@ -1,9 +1,10 @@
-let State, Tube, TubeVector, DonationEventVector, solve;
+let State, Tube, TubeVector, DonationEvent, DonationEventVector, solve;
 
 Module.onRuntimeInitialized = function() {
     State = Module.State;
     Tube = Module.Tube;
     TubeVector = Module.TubeVector;
+    DonationEvent = Module.DonationEvent;
     DonationEventVector = Module.DonationEventVector;
     solve = Module.solve;
     addTube('donor', 12, 232);
@@ -42,10 +43,16 @@ function removeTube(button) {
     const table = row.closest('tbody');
     table.removeChild(row);
     updateTubeNumbers(table);
+    clear();
+}
+
+function clear() {
     clearFinalPressure("donor");
     clearFinalPressure("target");
     const resultsDiv = document.getElementById('results');
     resultsDiv.classList.add('hidden');
+    clearResultsTable();
+
 }
 
 function updateTubeNumbers(table) {
@@ -63,6 +70,12 @@ function clearFinalPressure(type) {
         const finalPressureCell = rows[i].querySelector(".finalPressure");
         finalPressureCell.textContent = "-";
     }
+}
+
+function clearResultsTable() {
+    const table = document.getElementById(`connectionsToMake`).getElementsByTagName('tbody')[0];
+    const tbody = table.getElementsByTagName('tbody')[0];
+    tbody.innerHTML = "";
 }
 
 function solveProblem() {
@@ -98,27 +111,37 @@ function createTubeVector(tableId) {
 }
 
 function displayResults(state) {
+    // Display final pressure
     const targetRows = document.getElementById("targetInputs").getElementsByTagName('tbody')[0].rows;
     updateFinalPressureRows(targetRows, index => state.get_target_pressure(index));
 
     const donorRows = document.getElementById("donorInputs").getElementsByTagName('tbody')[0].rows;
     updateFinalPressureRows(donorRows, index => state.get_donor_pressure(index));
 
-    /*
+    // Display list of donation events
     const donationEvents = state.get_donation_events();
-    console.log(typeof donationEvents)
-    var s = " " + donationEvents.length;
-    for (let i = 0; i < donationEvents.length; i++) {
-        const event = donationEvents[i];
-        s += event.donor_index + " ";
+    for (let i = 0; i < donationEvents.size(); i++) {
+        const table = document.getElementById(`connectionsToMake`).getElementsByTagName('tbody')[0];
+        const event = donationEvents.get(i);
+        const donorNumber = event.donor_index + 1;
+        const targetNumber = event.target_index + 1;
+        const donorPressureBefore = event.donor_pressure_before.toFixed(1);
+        const donorPressureAfter = event.donor_pressure_after.toFixed(1);
+        const targetPressureBefore = event.target_pressure_before.toFixed(1);
+        const targetPressureAfter = event.target_pressure_after.toFixed(1);
+        const row = table.insertRow();
+        row.innerHTML = `
+            <td><span class="tubeName">D${donorNumber} &rarr; T${targetNumber}</span></td>
+            <td><span class="tubeName">${donorPressureBefore}</span></td>
+            <td><span class="tubeName">${donorPressureAfter}</span></td>
+            <td><span class="tubeName">${targetPressureBefore}</span></td>
+            <td><span class="tubeName">${targetPressureAfter}</span></td>
+        `;
     }
-    console.log(s);
+    donationEvents.delete();
 
     const resultsDiv = document.getElementById('results');
     resultsDiv.classList.remove('hidden');
-
-    resultsDiv.innerHTML = s;
-    */
 }
 
 function updateFinalPressureRows(rows, getPressureFunction) {

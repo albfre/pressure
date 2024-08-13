@@ -41,10 +41,10 @@ if(EMSCRIPTEN)
     add_custom_command(TARGET pressure_optimization_wasm POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy 
         ${CMAKE_CURRENT_BINARY_DIR}/pressure_optimization_wasm.js
-        ${CMAKE_CURRENT_SOURCE_DIR}/web/
+        ${CMAKE_CURRENT_SOURCE_DIR}/docs/
         COMMAND ${CMAKE_COMMAND} -E copy 
         ${CMAKE_CURRENT_BINARY_DIR}/pressure_optimization_wasm.wasm
-        ${CMAKE_CURRENT_SOURCE_DIR}/web/
+        ${CMAKE_CURRENT_SOURCE_DIR}/docs/
     )
 else()
     # Add compiler warnings

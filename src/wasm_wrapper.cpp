@@ -33,12 +33,10 @@ EMSCRIPTEN_BINDINGS(pressure_optimization) {
       .property("donor_index", &DonationEvent::donor_index)
       .property("target_index", &DonationEvent::target_index)
       .property("donor_pressure_before", &DonationEvent::donor_pressure_before)
-      .property("double donor_pressure_after",
-                &DonationEvent::donor_pressure_after)
-      .property("double target_pressure_before",
+      .property("donor_pressure_after", &DonationEvent::donor_pressure_after)
+      .property("target_pressure_before",
                 &DonationEvent::target_pressure_before)
-      .property("double target_pressure_after",
-                &DonationEvent::target_pressure_after);
+      .property("target_pressure_after", &DonationEvent::target_pressure_after);
 
   register_vector<DonationEvent>("DonationEventVector");
 

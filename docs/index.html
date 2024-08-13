@@ -16,7 +16,7 @@
     <div class="input-section">
         <div class="tubes-container">
             <div class="tube-column">
-                <h3>Donor tubes &ensp;<button onclick="addTube('donor', 12, 232)">Add donor</button></h3>
+                <h3>Donor tubes</h3>
                 <table id="donorInputs" class="tube-table">
                     <thead>
                         <tr>
@@ -29,9 +29,10 @@
                     </thead>
                     <tbody></tbody>
                 </table>
+                <button onclick="addTube('donor', 12, 232)">Add donor</button>
             </div>
             <div class="tube-column">
-                <h3>Target tubes &ensp; <button onclick="addTube('target', 10, 100, 200)">Add target</button></h3>
+                <h3>Target tubes</h3>
                 <table id="targetInputs" class="tube-table">
                     <thead>
                         <tr>
@@ -45,22 +46,35 @@
                     </thead>
                     <tbody></tbody>
                 </table>
+                <button onclick="addTube('target', 10, 100, 200)">Add target</button>
             </div>
         </div>
 
         <div class="solver-params">
-            <h3>Max no. of steps: <input type="number" id="depthLeft" min="1" max="12" value="8"></h3>
+            <h3>Max no. of connections: <input type="number" id="depthLeft" min="1" max="12" value="8"></h3>
         </div>
-
         <button onclick="solveProblem()">Solve</button>
+
     </div>
 
     <div id="results" class="hidden">
-        <h2>Results</h2>
-        <div id="objectiveValue"></div>
-        <div id="finalState"></div>
-        <h3>Donation events</h3>
-        <div id="events"></div>
+        <div id="events">
+            <div class="tube-column">
+                <h3>Connections to make</h3>
+                <table id="connectionsToMake" class="tube-table">
+                    <thead>
+                        <tr>
+                            <th>Connection</th>
+                            <th>D before</th>
+                            <th>D after</th>
+                            <th>T before</th>
+                            <th>T after</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
     </div>
 
 </body>
