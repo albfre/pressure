@@ -17,6 +17,26 @@ Module.onRuntimeInitialized = function() {
     addTube('target', 8, 100, 300);
 };
 
+document.addEventListener('DOMContentLoaded', () => {
+    const modal = document.getElementById('infoModal');
+    const btn = document.getElementById('infoButton');
+    const span = document.getElementsByClassName('close')[0];
+
+    btn.onclick = () => {
+        modal.style.display = 'block';
+    };
+
+    span.onclick = () => {
+        modal.style.display = 'none';
+    };
+
+    window.onclick = (event) => {
+        if (event.target === modal) {
+            modal.style.display = 'none';
+        }
+    };
+});
+
 function addTube(type, volume, pressure, maxPressure = 0) {
     const table = document.getElementById(`${type}Inputs`).getElementsByTagName('tbody')[0];
     const rowCount = table.rows.length + 1;
@@ -36,6 +56,7 @@ function addTube(type, volume, pressure, maxPressure = 0) {
         <td><span class="finalPressure">-</span></td>
         <td><button class="remove-tube" onclick="removeTube(this)">×</button></td>
     `;
+    clearResults();
 }
 
 function removeTube(button) {
@@ -43,16 +64,7 @@ function removeTube(button) {
     const table = row.closest('tbody');
     table.removeChild(row);
     updateTubeNumbers(table);
-    clear();
-}
-
-function clear() {
-    clearFinalPressure("donor");
-    clearFinalPressure("target");
-    const resultsDiv = document.getElementById('results');
-    resultsDiv.classList.add('hidden');
-    clearResultsTable();
-
+    clearResults();
 }
 
 function updateTubeNumbers(table) {
@@ -63,22 +75,26 @@ function updateTubeNumbers(table) {
     }
 }
 
+function clearResults() {
+    clearFinalPressure("donor");
+    clearFinalPressure("target");
+    document.getElementById('results').classList.add('hidden');
+    clearResultsTable();
+}
+
 function clearFinalPressure(type) {
-    const table = document.getElementById(`${type}Inputs`).getElementsByTagName('tbody')[0];
-    const rows = table.rows;
-    for (let i = 0; i < rows.length; i++) {
-        const finalPressureCell = rows[i].querySelector(".finalPressure");
-        finalPressureCell.textContent = "-";
-    }
+    const rows = document.querySelectorAll(`#${type}Inputs tbody tr`);
+    rows.forEach(row => {
+        row.querySelector(".finalPressure").textContent = "-";
+    });
 }
 
 function clearResultsTable() {
-    const table = document.getElementById(`connectionsToMake`).getElementsByTagName('tbody')[0];
-    const tbody = table.getElementsByTagName('tbody')[0];
-    tbody.innerHTML = "";
+    document.querySelector('#connectionsToMake tbody').innerHTML = '';
 }
 
 function solveProblem() {
+    clearResults();
     const donors = createTubeVector('donorInputs');
     const targets = createTubeVector('targetInputs');
     
@@ -111,17 +127,14 @@ function createTubeVector(tableId) {
 }
 
 function displayResults(state) {
-    // Display final pressure
-    const targetRows = document.getElementById("targetInputs").getElementsByTagName('tbody')[0].rows;
-    updateFinalPressureRows(targetRows, index => state.get_target_pressure(index));
+    // Display final pressure in target and donor tables
+    updateFinalPressureRows("targetInputs", index => state.get_target_pressure(index));
+    updateFinalPressureRows("donorInputs", index => state.get_donor_pressure(index));
 
-    const donorRows = document.getElementById("donorInputs").getElementsByTagName('tbody')[0].rows;
-    updateFinalPressureRows(donorRows, index => state.get_donor_pressure(index));
-
-    // Display list of donation events
+    // Display list of donation events in results table
     const donationEvents = state.get_donation_events();
+    const table = document.querySelector('#connectionsToMake tbody');
     for (let i = 0; i < donationEvents.size(); i++) {
-        const table = document.getElementById(`connectionsToMake`).getElementsByTagName('tbody')[0];
         const event = donationEvents.get(i);
         const donorNumber = event.donor_index + 1;
         const targetNumber = event.target_index + 1;
@@ -139,12 +152,11 @@ function displayResults(state) {
         `;
     }
     donationEvents.delete();
-
-    const resultsDiv = document.getElementById('results');
-    resultsDiv.classList.remove('hidden');
+    document.getElementById('results').classList.remove('hidden');
 }
 
-function updateFinalPressureRows(rows, getPressureFunction) {
+function updateFinalPressureRows(tableId, getPressureFunction) {
+    const rows = document.querySelectorAll(`#${tableId} tbody tr`);
     for (let i = 0; i < rows.length; i++) {
         const row = rows[i];
         const pressure = getPressureFunction(i).toFixed(1);

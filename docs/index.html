@@ -11,7 +11,9 @@
 </head>
 
 <body>
-    <h1>Pressure optimizer</h1>
+    <h1>Pressure optimizer
+        <button id="infoButton" class="info-button">ℹ️</button>
+    </h1>
 
     <div class="input-section">
         <div class="tubes-container">
@@ -65,15 +67,53 @@
                     <thead>
                         <tr>
                             <th>Connection</th>
-                            <th>D before</th>
-                            <th>D after</th>
-                            <th>T before</th>
-                            <th>T after</th>
+                            <th>Donor before</th>
+                            <th>Donor after</th>
+                            <th>Target before</th>
+                            <th>Target after</th>
                         </tr>
                     </thead>
                     <tbody></tbody>
                 </table>
             </div>
+        </div>
+    </div>
+
+    <div id="infoModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>About</h2>
+            <p>The pressure optimizer finds the order in which to connect donor tubes to target tubes
+                to get an efficient gas transfer. It calculates the optimal sequence of transfers to achieve a pressure
+                as close as possible to (but not exceeding) the maximum pressure of the target tube.</p>
+
+            <h3>How to interpret the results</h3>
+            <ul>
+                <li><strong>Final pressure:</strong> These show the resulting pressures in each tube after all
+                    transfers are complete.</li>
+                <li><strong>Connections to make:</strong> This table shows the sequence of transfers to perform:
+                    <ul>
+                        <li>D# → T#: Indicates a transfer from donor tube # to target tube #</li>
+                        <li>Pressures before/after: Shows the pressures in the donor and target tubes before and after
+                            each transfer</li>
+                    </ul>
+                </li>
+            </ul>
+            <p>Follow the connections in order to achieve the optimal transfer of gas.</p>
+
+            <h3>Optimization specifics</h3>
+            <p>The optimization is performed using explicit enumeration of possible connections, using
+                some symmetries to avoid having to enumerate redundant combinations. The objective function, which is to
+                be minimized,
+                is lexicographic: </p>
+            <ol>
+                <li><strong>Worst case target:</strong> The difference between the maximum pressure and the final
+                    pressure of the worst case target.</li>
+                <li><strong>Number of connections:</strong> The number of steps in the sequence of connections to make.
+                </li>
+                <li><strong>Average difference:</strong> The average of the differences between the maximum pressure and
+                    the final pressure for all targets.</li>
+            </ol>
         </div>
     </div>
 
