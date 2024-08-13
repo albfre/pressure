@@ -38,6 +38,14 @@ struct DonationEvent {
   double target_pressure_after;
   ObjectiveValue lexicographic_objective_value;
   double objective_value;
+
+  double get_worst_case_difference() const {
+    return std::get<1>(lexicographic_objective_value);
+  }
+
+  double get_sum_difference() const {
+    return std::get<3>(lexicographic_objective_value);
+  }
 };
 
 class State {

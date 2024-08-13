@@ -133,6 +133,15 @@ function displayResults(state) {
 
     // Display list of donation events in results table
     const donationEvents = state.get_donation_events();
+    if (donationEvents.size() > 0) {
+        const lastEvent = donationEvents.get(donationEvents.size() - 1);
+        const worstObjective = lastEvent.get_worst_case_difference()
+        const numTargets = document.querySelectorAll(`#targetInputs tbody tr`).length;
+        const averageObjective = lastEvent.get_sum_difference() / numTargets;
+        document.getElementsByClassName('worst-objective')[0].innerHTML = worstObjective.toFixed(1);
+        document.getElementsByClassName('average-objective')[0].innerHTML = averageObjective.toFixed(1);
+    }
+
     const table = document.querySelector('#connectionSequence tbody');
     for (let i = 0; i < donationEvents.size(); i++) {
         const event = donationEvents.get(i);

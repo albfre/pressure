@@ -36,7 +36,10 @@ EMSCRIPTEN_BINDINGS(pressure_optimization) {
       .property("donor_pressure_after", &DonationEvent::donor_pressure_after)
       .property("target_pressure_before",
                 &DonationEvent::target_pressure_before)
-      .property("target_pressure_after", &DonationEvent::target_pressure_after);
+      .property("target_pressure_after", &DonationEvent::target_pressure_after)
+      .function("get_worst_case_difference",
+                &DonationEvent::get_worst_case_difference)
+      .function("get_sum_difference", &DonationEvent::get_sum_difference);
 
   register_vector<DonationEvent>("DonationEventVector");
 

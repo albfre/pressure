@@ -56,26 +56,28 @@
             <h3>Max no. of connections: <input type="number" id="depthLeft" min="1" max="12" value="8"></h3>
         </div>
         <button onclick="solveProblem()">Solve</button>
-
     </div>
 
     <div id="results" class="hidden">
-        <div id="events">
-            <div class="tube-column">
-                <h3>Connection sequence</h3>
-                <table id="connectionSequence" class="tube-table">
-                    <thead>
-                        <tr>
-                            <th>Connection</th>
-                            <th>Donor before</th>
-                            <th>Donor after</th>
-                            <th>Target before</th>
-                            <th>Target after</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-            </div>
+        <div class="Objective">
+            <h3>Worst case difference (max - final): <span class="worst-objective"></span></h3>
+            <h3>Average difference (max - final): <span class="average-objective"></span></h3>
+        </div>
+
+        <div class="tube-column">
+            <h3>Connection sequence</h3>
+            <table id="connectionSequence" class="tube-table">
+                <thead>
+                    <tr>
+                        <th>Connection</th>
+                        <th>Donor before</th>
+                        <th>Donor after</th>
+                        <th>Target before</th>
+                        <th>Target after</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
         </div>
     </div>
 

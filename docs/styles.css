@@ -65,7 +65,7 @@ h3 {
 }
 
 input[type="number"] {
-    width: 3ch;
+    width: 4ch;
     background-color: rgba(255, 255, 255, 0.1);
     border: 1px solid #00FFFF;
     color: #E6E6E6;
