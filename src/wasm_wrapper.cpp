@@ -9,11 +9,6 @@
 using namespace emscripten;
 using namespace PressureOptimization;
 
-State solve_wrapper(const State& initial_state, size_t depth_left,
-                    size_t max_num_of_tests) {
-  return Solver::solve(initial_state, depth_left, max_num_of_tests);
-}
-
 State solve(const State& initial_state, size_t depth_left,
             size_t max_num_of_tests) {
   return Solver::solve(initial_state, depth_left, max_num_of_tests);
