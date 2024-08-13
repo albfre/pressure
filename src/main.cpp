@@ -18,12 +18,13 @@ int main(int argc, char* argv[]) {
     return 1;
   }
 
-  int max_depth;
+  size_t max_depth = 0;
   try {
-    max_depth = std::stoi(argv[1]);
-    if (max_depth <= 0) {
+    auto max_depth_i = std::stoi(argv[1]);
+    if (max_depth_i <= 0) {
       throw std::out_of_range("max_depth must be positive");
     }
+    max_depth = static_cast<size_t>(max_depth_i);
   } catch (const std::exception& e) {
     std::cerr << "Error parsing max_depth: " << e.what() << std::endl;
     return 1;
