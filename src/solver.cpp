@@ -5,13 +5,16 @@
 #endif
 
 #include <algorithm>
+#include <cassert>
 #include <iostream>
 #include <numeric>
 #include <ranges>
+#include <sstream>
 
 namespace PressureOptimization {
 State Solver::solve(const State initial_state, const size_t depth_left,
-                    const size_t max_num_of_tests_per_target) {
+                    const size_t max_num_of_tests_per_target,
+                    const JSCallback callback) {
   const auto num_targets = initial_state.num_targets();
 
 #ifdef EMSCRIPTEN
@@ -19,9 +22,17 @@ State Solver::solve(const State initial_state, const size_t depth_left,
   auto best_state = initial_state;
   size_t num_tests = 0;
   solve_(state, best_state, num_tests, depth_left, max_num_of_tests_per_target,
-         std::pair{0, num_targets});
+         std::pair{0, num_targets}, callback);
+  if (callback != nullptr) {
+    callback(static_cast<int>(num_tests),
+             best_state.get_worst_case_difference(),
+             best_state.get_average_difference());
+  }
 #else
   omp_set_num_threads(2);
+  if (callback != nullptr) {
+    std::cout << "callback" << std::endl;
+  }
   auto best_states = std::vector<State>(num_targets, initial_state);
   auto num_tests_vec = std::vector<size_t>(num_targets, 0);
 #pragma omp parallel for
@@ -47,10 +58,10 @@ State Solver::solve(const State initial_state, const size_t depth_left,
   return best_state;
 }
 
-void Solver::solve_(
-    State& state, State& best_state, size_t& num_tests, const size_t depth_left,
-    const size_t max_num_of_tests,
-    std::optional<std::pair<size_t, size_t>> target_index_range) {
+void Solver::solve_(State& state, State& best_state, size_t& num_tests,
+                    const size_t depth_left, const size_t max_num_of_tests,
+                    std::optional<std::pair<size_t, size_t>> target_index_range,
+                    const JSCallback callback) {
   if (depth_left == 0) {
     return;
   }
@@ -72,9 +83,15 @@ void Solver::solve_(
         best_state = state;
       }
       ++num_tests;
+      if (callback != nullptr && num_tests % 100000 == 0) {
+        callback(static_cast<int>(num_tests),
+                 best_state.get_worst_case_difference(),
+                 best_state.get_average_difference());
+      }
 
       // Restricted target index range should only be used in outermost call
-      solve_(state, best_state, num_tests, depth_left - 1, max_num_of_tests);
+      solve_(state, best_state, num_tests, depth_left - 1, max_num_of_tests,
+             std::pair{0, state.num_targets()}, callback);
       state.unapply_last_event();
     }
   }

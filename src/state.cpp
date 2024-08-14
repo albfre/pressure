@@ -202,6 +202,21 @@ double State::get_donor_pressure(const size_t donor_index) const {
   return donors_.at(donor_index).pressure;
 }
 
+double State::get_worst_case_difference() const {
+  if (donation_events_.empty()) {
+    return std::numeric_limits<double>::max();
+  }
+  return std::get<1>(donation_events_.back().lexicographic_objective_value);
+}
+
+double State::get_average_difference() const {
+  if (donation_events_.empty()) {
+    return std::numeric_limits<double>::max();
+  }
+  return std::get<3>(donation_events_.back().lexicographic_objective_value) /
+         num_targets();
+}
+
 bool State::operator<(const State& other) const {
   return std::tie(targets_, donors_) < std::tie(other.targets_, other.donors_);
 }

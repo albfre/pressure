@@ -38,14 +38,6 @@ struct DonationEvent {
   double target_pressure_after;
   ObjectiveValue lexicographic_objective_value;
   double objective_value;
-
-  double get_worst_case_difference() const {
-    return std::get<1>(lexicographic_objective_value);
-  }
-
-  double get_sum_difference() const {
-    return std::get<3>(lexicographic_objective_value);
-  }
 };
 
 class State {
@@ -64,7 +56,8 @@ class State {
   std::vector<DonationEvent> get_donation_events() const;
   double get_target_pressure(size_t target_index) const;
   double get_donor_pressure(size_t donor_index) const;
-
+  double get_worst_case_difference() const;
+  double get_average_difference() const;
   bool operator<(const State& other) const;
   bool operator==(const State& other) const;
   size_t hash() const;

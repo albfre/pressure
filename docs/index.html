@@ -18,7 +18,7 @@
     <div class="input-section">
         <div class="tubes-container">
             <div class="tube-column">
-                <h3>Donor tubes</h3>
+                <h3>Donor tubes <button onclick="addTube('donor', 12, 232)">Add donor</button></h3>
                 <table id="donorInputs" class="tube-table">
                     <thead>
                         <tr>
@@ -31,10 +31,9 @@
                     </thead>
                     <tbody></tbody>
                 </table>
-                <button onclick="addTube('donor', 12, 232)">Add donor</button>
             </div>
             <div class="tube-column">
-                <h3>Target tubes</h3>
+                <h3>Target tubes <button onclick="addTube('target', 10, 100, 200)">Add target</button></h3>
                 <table id="targetInputs" class="tube-table">
                     <thead>
                         <tr>
@@ -48,7 +47,6 @@
                     </thead>
                     <tbody></tbody>
                 </table>
-                <button onclick="addTube('target', 10, 100, 200)">Add target</button>
             </div>
         </div>
 
@@ -60,6 +58,7 @@
 
     <div id="results" class="hidden">
         <div class="Objective">
+            <h3>No. of tests: <span class="num-tests"></span></h3>
             <h3>Worst case difference (max - final): <span class="worst-objective"></span></h3>
             <h3>Average difference (max - final): <span class="average-objective"></span></h3>
         </div>
