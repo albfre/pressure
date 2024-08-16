@@ -83,7 +83,7 @@ void Solver::solve_(State& state, State& best_state, size_t& num_tests,
         best_state = state;
       }
       ++num_tests;
-      if (callback != nullptr && num_tests % 100000 == 0) {
+      if (callback != nullptr && num_tests % 200000 == 0) {
         callback(static_cast<int>(num_tests),
                  best_state.get_worst_case_difference(),
                  best_state.get_average_difference());

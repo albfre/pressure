@@ -130,8 +130,9 @@ function initializeWorker() {
     };
 }
 
-function updateUI({ numTests, worstObjective, averageObjective }) {
+function updateUI({ numTests, worstObjective, averageObjective, elapsedTime }) {
     requestAnimationFrame(() => {
+        document.getElementsByClassName('elapsed-time')[0].textContent = (elapsedTime / 1000).toFixed(3);
         document.getElementsByClassName('num-tests')[0].textContent = numTests;
         document.getElementsByClassName('worst-objective')[0].textContent = worstObjective.toFixed(1);
         document.getElementsByClassName('average-objective')[0].textContent = averageObjective.toFixed(1);
@@ -145,8 +146,6 @@ function displayEventData({finalDonorPressures, finalTargetPressures, donationEv
 
     // Display list of donation events in results table
     const table = document.querySelector('#connectionSequence tbody');
-    console.log("donation length");
-    console.log(donationEventData.length);
     for (let i = 0; i < donationEventData.length; i++) {
         const {
             donorNumber,

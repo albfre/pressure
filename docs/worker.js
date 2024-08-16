@@ -4,12 +4,15 @@ self.onmessage = function(e) {
     if (e.data.type === 'solve') {
         const { donorData, targetData, depthLeft, maxTests } = e.data;
 
+        const startTime = performance.now();
+
         const updateStatus = (numTests, worstObjective, averageObjective) => {
             self.postMessage({ 
                 type: 'update', 
                 numTests, 
                 worstObjective, 
-                averageObjective 
+                averageObjective,
+                elapsedTime: self.performance.now() - startTime
             });
         };
 
@@ -30,6 +33,7 @@ self.onmessage = function(e) {
         }
 
         const donationEventData = createDonationEventData(finalState.get_donation_events());
+
         self.postMessage({ type: 'result', finalDonorPressures, finalTargetPressures, donationEventData });
     }
 };
