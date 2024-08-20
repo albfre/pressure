@@ -13,7 +13,7 @@ using State = PressureOptimization::State;
 using Solver = PressureOptimization::Solver;
 
 int main(int argc, char* argv[]) {
-  if (argc != 2) {
+  if (argc < 2) {
     std::cerr << "Usage: " << argv[0] << " <max_depth>" << std::endl;
     return 1;
   }
@@ -69,7 +69,9 @@ int main(int argc, char* argv[]) {
   State state(std::move(donors), std::move(targets));
   std::cout << "Initial state:" << std::endl;
   state.print();
-  auto best_state = Solver::solve(std::move(state), max_depth);
+  auto best_state = argc == 2
+                        ? Solver::solve(std::move(state), max_depth)
+                        : Solver::solve_bisected(std::move(state), max_depth);
 
   const auto t1 = std::chrono::high_resolution_clock::now();
 

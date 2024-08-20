@@ -14,14 +14,14 @@ using JSCallback = std::function<void(int, double, double)>;
 class Solver {
  public:
   static State solve(const State initial_state, size_t depth_left,
-                     size_t max_num_of_tests = static_cast<size_t>(1e7),
+                     size_t max_num_of_tests = static_cast<size_t>(1e8),
                      JSCallback callback = nullptr);
 
   // An approximate solver that explores partitions of the tubes into two
   // subsets that are handled individually
   static State solve_bisected(
       const State initial_state, size_t depth_left,
-      size_t max_num_of_tests = static_cast<size_t>(1e7),
+      size_t max_num_of_tests = static_cast<size_t>(1e8),
       JSCallback callback = nullptr);
 
  private:
