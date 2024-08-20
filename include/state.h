@@ -43,7 +43,11 @@ struct DonationEvent {
 class State {
  public:
   State(std::vector<Tube> donors, std::vector<Tube> targets);
-  static State combine(State state1, State state2);
+  static State combine(const State& state1, const State& state2,
+                       const std::vector<size_t>& donor_indices1,
+                       const std::vector<size_t>& donor_indices2,
+                       const std::vector<size_t>& target_indices1,
+                       const std::vector<size_t>& target_indices2);
   State substate(const std::vector<size_t>& donor_indices,
                  const std::vector<size_t>& target_indices) const;
   bool is_modified() const;

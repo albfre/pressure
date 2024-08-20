@@ -144,7 +144,7 @@ void Solver::solve_bisected_(const State& initial_state, State& best_state,
         if (b2.objective_value() > best_state.objective_value()) {
           break;  // state 2 gets less depth in future iterations
         }
-        const auto combined = State::combine(b1, b2);
+        const auto combined = State::combine(b1, b2, d1, d2, t1, t2);
         if (combined.objective_value() < best_state.objective_value()) {
           best_state = combined;
         }

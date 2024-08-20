@@ -22,28 +22,39 @@ State::State(std::vector<Tube> donors, std::vector<Tube> targets)
   }
 }
 
-State State::combine(State state1, State state2) {
+State State::combine(const State& state1, const State& state2,
+                     const std::vector<size_t>& donor_indices1,
+                     const std::vector<size_t>& donor_indices2,
+                     const std::vector<size_t>& target_indices1,
+                     const std::vector<size_t>& target_indices2) {
   std::vector<std::pair<size_t, size_t>> events;
   events.reserve(state1.donation_events_.size() +
                  state2.donation_events_.size());
   const auto push_back_events = [&events](const auto& donation_events,
-                                          const auto donor_offset,
-                                          const auto target_offset) {
+                                          const auto& donor_indices,
+                                          const auto& target_indices) {
     std::ranges::transform(
         donation_events, std::back_inserter(events), [&](const auto& event) {
-          return std::pair{event.donor_index + donor_offset,
-                           event.target_index + target_offset};
+          return std::pair{donor_indices.at(event.donor_index),
+                           target_indices.at(event.target_index)};
         });
   };
-  push_back_events(state1.donation_events_, 0, 0);
-  push_back_events(state2.donation_events_, state1.donors_.size(),
-                   state1.targets_.size());
-  auto donors = state1.initial_donors_;
-  donors.insert(donors.end(), state2.initial_donors_.cbegin(),
-                state2.initial_donors_.cend());
-  auto targets = state1.initial_targets_;
-  targets.insert(targets.end(), state2.initial_targets_.cbegin(),
-                 state2.initial_targets_.cend());
+  push_back_events(state1.donation_events_, donor_indices1, target_indices1);
+  push_back_events(state2.donation_events_, donor_indices2, target_indices2);
+
+  auto donors = std::vector<Tube>(state1.num_donors() + state2.num_donors());
+  const auto add_tubes = [](auto& v, const auto& tubes, const auto& indices) {
+    for (size_t i = 0; const auto& tube : tubes) {
+      v.at(indices.at(i++)) = tube;
+    }
+  };
+  add_tubes(donors, state1.initial_donors_, donor_indices1);
+  add_tubes(donors, state2.initial_donors_, donor_indices2);
+
+  auto targets = std::vector<Tube>(state1.num_targets() + state2.num_targets());
+  add_tubes(targets, state1.initial_targets_, target_indices1);
+  add_tubes(targets, state2.initial_targets_, target_indices2);
+
   auto state = State(donors, targets);
   for (const auto& [donor_index, target_index] : events) {
     state.apply(donor_index, target_index);
@@ -141,8 +152,9 @@ bool State::is_admissible(const size_t donor_index,
   // Make sure connection leads to a sufficient improvement
   const auto diff = std::max(target.max_pressure - target.pressure, 0.0);
   if (unbounded_pressure_after <=
-      target.pressure + minimum_improvement_fraction_ * diff)
+      target.pressure + minimum_improvement_fraction_ * diff) {
     return false;
+  }
 
   return true;
 }
@@ -259,8 +271,7 @@ double State::get_average_difference() const {
   if (donation_events_.empty()) {
     return std::numeric_limits<double>::max();
   }
-  return std::get<3>(donation_events_.back().lexicographic_objective_value) /
-         num_targets();
+  return std::get<2>(donation_events_.back().lexicographic_objective_value);
 }
 
 bool State::operator<(const State& other) const {
@@ -294,7 +305,7 @@ double State::unbounded_pressure_after_(const Tube& donor,
 
 double State::objective_value_(ObjectiveValue value) const {
   const auto& [val1, val2, val3, val4] = value;
-  return 1e8 * val1 + 1e4 * val2 + 1e2 * val3 + val4;
+  return 1e9 * val1 + 1e5 * val2 + 1e2 * val3 + val4;
 }
 
 std::tuple<double, double, double, double> State::lexicographic_objective_()
@@ -304,8 +315,8 @@ std::tuple<double, double, double, double> State::lexicographic_objective_()
   // targets?
   // 2. Is worst pressure difference in targets within lower tolerance?
   // (objective value 0 if true, value of lowest difference if false)
-  // 3. Number of connections
-  // 4. Sum of pressure differences
+  // 3. Average pressure differences
+  // 4. Number of connections
   auto worst_diff = 0.0;
   auto sum = 0.0;
   auto all_within_tolerance = true;
@@ -314,14 +325,14 @@ std::tuple<double, double, double, double> State::lexicographic_objective_()
   // of using standard algorithms
   for (const auto& t : targets_) {
     const auto diff = t.max_pressure - t.pressure;
-    all_within_tolerance &= diff <= upper_pressure_tolerance_;
+    all_within_tolerance &= -diff <= upper_pressure_tolerance_;
     worst_diff = std::max(worst_diff, diff);
     sum += diff;
   }
   const auto val1 = all_within_tolerance ? 0.0 : 1.0;
   const auto val2 = worst_diff <= lower_pressure_tolerance_ ? 0.0 : worst_diff;
-  const auto val3 = static_cast<double>(donation_events_.size());
-  const auto val4 = sum;
+  const auto val3 = sum / num_targets();
+  const auto val4 = static_cast<double>(donation_events_.size());
 
   return {val1, val2, val3, val4};
 }

@@ -92,18 +92,6 @@ function solveProblem() {
     });
 }
 
-function updateFinalPressureRows(tableId, getPressureFunction) {
-    const rows = document.querySelectorAll(`#${tableId} tbody tr`);
-    for (let i = 0; i < rows.length; i++) {
-        const row = rows[i];
-        const pressure = getPressureFunction(i).toFixed(1);
-        const finalPressureSpan = row.querySelector('.finalPressure');
-        if (finalPressureSpan) {
-            finalPressureSpan.textContent = pressure;
-        }
-    }
-}
-
 function getTubeData(tableId) {
     const tubeData = [];
     const rows = document.getElementById(tableId).getElementsByTagName('tbody')[0].rows;
@@ -163,6 +151,18 @@ function displayEventData({finalDonorPressures, finalTargetPressures, donationEv
             <td><span class="tubeName">${targetPressureBefore.toFixed(1)}</span></td>
             <td><span class="tubeName">${targetPressureAfter.toFixed(1)}</span></td>
         `;
+    }
+}
+
+function updateFinalPressureRows(tableId, getPressureFunction) {
+    const rows = document.querySelectorAll(`#${tableId} tbody tr`);
+    for (let i = 0; i < rows.length; i++) {
+        const row = rows[i];
+        const pressure = getPressureFunction(i).toFixed(1);
+        const finalPressureSpan = row.querySelector('.finalPressure');
+        if (finalPressureSpan) {
+            finalPressureSpan.textContent = pressure;
+        }
     }
 }
 
