@@ -42,20 +42,25 @@ State State::combine(const State& state1, const State& state2,
   push_back_events(state1.donation_events_, donor_indices1, target_indices1);
   push_back_events(state2.donation_events_, donor_indices2, target_indices2);
 
-  auto donors = std::vector<Tube>(state1.num_donors() + state2.num_donors());
-  const auto add_tubes = [](auto& v, const auto& tubes, const auto& indices) {
-    for (size_t i = 0; const auto& tube : tubes) {
-      v.at(indices.at(i++)) = tube;
-    }
+  const auto combine_tubes = [](const auto& tubes1, const auto& tubes2,
+                                const auto& indices1, const auto& indices2) {
+    auto result = std::vector<Tube>(tubes1.size() + tubes2.size());
+    const auto add_tubes = [&result](const auto& tubes, const auto& indices) {
+      for (size_t i = 0; const auto& tube : tubes) {
+        result.at(indices.at(i++)) = tube;
+      }
+    };
+    add_tubes(tubes1, indices1);
+    add_tubes(tubes2, indices2);
+    return result;
   };
-  add_tubes(donors, state1.initial_donors_, donor_indices1);
-  add_tubes(donors, state2.initial_donors_, donor_indices2);
 
-  auto targets = std::vector<Tube>(state1.num_targets() + state2.num_targets());
-  add_tubes(targets, state1.initial_targets_, target_indices1);
-  add_tubes(targets, state2.initial_targets_, target_indices2);
+  auto donors = combine_tubes(state1.initial_donors_, state2.initial_donors_,
+                              donor_indices1, donor_indices2);
+  auto targets = combine_tubes(state1.initial_targets_, state2.initial_targets_,
+                               target_indices1, target_indices2);
 
-  auto state = State(donors, targets);
+  auto state = State(std::move(donors), std::move(targets));
   for (const auto& [donor_index, target_index] : events) {
     state.apply(donor_index, target_index);
   }

@@ -4,6 +4,7 @@
 
 #include <functional>
 #include <optional>
+#include <set>
 
 #include "state.h"
 
@@ -36,7 +37,7 @@ class Solver {
                               size_t max_num_of_tests,
                               JSCallback callback = nullptr);
 
-  static std::vector<std::pair<std::vector<size_t>, std::vector<size_t>>>
+  static std::set<std::pair<std::vector<size_t>, std::vector<size_t>>>
   get_bipartitions_(size_t num_elements, size_t min_size);
 
   static void call_callback_(const JSCallback& callback,

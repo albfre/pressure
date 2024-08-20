@@ -154,9 +154,8 @@ void Solver::solve_bisected_(const State& initial_state, State& best_state,
   best_state.set_num_tests(num_tests);
 }
 
-std::vector<std::pair<std::vector<size_t>, std::vector<size_t>>>
+std::set<std::pair<std::vector<size_t>, std::vector<size_t>>>
 Solver::get_bipartitions_(const size_t num_elements, const size_t min_size) {
-  std::vector<std::pair<std::vector<size_t>, std::vector<size_t>>> bipartitions;
   const auto next_state = [](auto& state) {
     const auto it = std::ranges::find(state, false);
     if (it == state.cend()) {
@@ -168,6 +167,7 @@ Solver::get_bipartitions_(const size_t num_elements, const size_t min_size) {
   };
   std::deque<bool> state(num_elements, false);
 
+  std::set<std::pair<std::vector<size_t>, std::vector<size_t>>> bipartitions;
   // Don't include all false or all true
   while (next_state(state)) {
     std::vector<size_t> set1, set2;
@@ -175,7 +175,10 @@ Solver::get_bipartitions_(const size_t num_elements, const size_t min_size) {
       (state[i] ? set1 : set2).push_back(i);
     }
     if (set1.size() >= min_size && set2.size() >= min_size) {
-      bipartitions.emplace_back(std::move(set1), std::move(set2));
+      if (set2 < set1) {
+        std::swap(set1, set2);
+      }
+      bipartitions.insert({std::move(set1), std::move(set2)});
     }
   }
   return bipartitions;
