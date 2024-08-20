@@ -81,7 +81,7 @@ function solveProblem() {
     const donorData = getTubeData('donorInputs');
     const targetData = getTubeData('targetInputs');
     const depthLeft = parseInt(document.getElementById('depthLeft').value);
-    const maxTests = 2e7;
+    const maxTests = 1e7;
 
     worker.postMessage({
         type: 'solve',
