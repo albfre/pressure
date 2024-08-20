@@ -42,7 +42,11 @@ struct DonationEvent {
 
 class State {
  public:
-  State(std::vector<Tube> targets, std::vector<Tube> donors);
+  State(std::vector<Tube> donors, std::vector<Tube> targets);
+  static State combine(State state1, State state2);
+  State substate(const std::vector<size_t>& donor_indices,
+                 const std::vector<size_t>& target_indices) const;
+  bool is_modified() const;
   bool is_worse_than(const State& other) const;
   bool is_admissible(const size_t donor_index, const size_t target_index) const;
   void apply(const size_t donor_index, const size_t target_index);
@@ -71,11 +75,13 @@ class State {
   double minimum_improvement_fraction_ = 0.2;
   double upper_pressure_tolerance_ = 1e-6;
   double lower_pressure_tolerance_ = 20.0;
-  size_t max_num_of_donor_connections_ = 2;
+  size_t max_num_of_donor_connections_ = 3;
   size_t max_num_of_target_connections_ = 3;
 
-  std::vector<Tube> targets_;
   std::vector<Tube> donors_;
+  std::vector<Tube> targets_;
+  std::vector<Tube> initial_donors_;
+  std::vector<Tube> initial_targets_;
   std::vector<DonationEvent> donation_events_;
   std::vector<std::deque<bool>> are_donors_equivalent_from_start_;
   size_t num_tests_ = 0;

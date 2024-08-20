@@ -19,7 +19,7 @@ self.onmessage = function(e) {
         const donors = createTubeVector(donorData);
         const targets = createTubeVector(targetData);
 
-        const initialState = new Module.State(targets, donors);
+        const initialState = new Module.State(donors, targets);
 
         const finalState = Module.solve(initialState, depthLeft, maxTests, updateStatus);
 

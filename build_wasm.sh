@@ -3,6 +3,8 @@
 # Exit on error
 set -e
 
+source ~/emsdk/emsdk_env.sh
+
 # Check if Emscripten is in the PATH
 if !command -v emcc &> /dev/null
 then

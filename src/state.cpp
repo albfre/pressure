@@ -6,9 +6,11 @@
 #include <ranges>
 
 namespace PressureOptimization {
-State::State(std::vector<Tube> targets, std::vector<Tube> donors)
-    : targets_(std::move(targets)),
-      donors_(std::move(donors)),
+State::State(std::vector<Tube> donors, std::vector<Tube> targets)
+    : donors_(std::move(donors)),
+      targets_(std::move(targets)),
+      initial_donors_(donors_),
+      initial_targets_(targets_),
       are_donors_equivalent_from_start_(donors_.size(),
                                         std::deque<bool>(donors_.size())) {
   for (size_t i = 0; i < donors_.size(); ++i) {
@@ -19,6 +21,50 @@ State::State(std::vector<Tube> targets, std::vector<Tube> donors)
     }
   }
 }
+
+State State::combine(State state1, State state2) {
+  std::vector<std::pair<size_t, size_t>> events;
+  events.reserve(state1.donation_events_.size() +
+                 state2.donation_events_.size());
+  const auto push_back_events = [&events](const auto& donation_events,
+                                          const auto donor_offset,
+                                          const auto target_offset) {
+    std::ranges::transform(
+        donation_events, std::back_inserter(events), [&](const auto& event) {
+          return std::pair{event.donor_index + donor_offset,
+                           event.target_index + target_offset};
+        });
+  };
+  push_back_events(state1.donation_events_, 0, 0);
+  push_back_events(state2.donation_events_, state1.donors_.size(),
+                   state1.targets_.size());
+  auto donors = state1.initial_donors_;
+  donors.insert(donors.end(), state2.initial_donors_.cbegin(),
+                state2.initial_donors_.cend());
+  auto targets = state1.initial_targets_;
+  targets.insert(targets.end(), state2.initial_targets_.cbegin(),
+                 state2.initial_targets_.cend());
+  auto state = State(donors, targets);
+  for (const auto& [donor_index, target_index] : events) {
+    state.apply(donor_index, target_index);
+  }
+  return state;
+}
+
+State State::substate(const std::vector<size_t>& donor_indices,
+                      const std::vector<size_t>& target_indices) const {
+  const auto make_tubes = [&](const auto& indices, const auto& source) {
+    std::vector<Tube> tubes;
+    tubes.reserve(indices.size());
+    std::ranges::transform(indices, std::back_inserter(tubes),
+                           [&](const auto& i) { return source.at(i); });
+    return tubes;
+  };
+  return State(make_tubes(donor_indices, donors_),
+               make_tubes(target_indices, targets_));
+}
+
+bool State::is_modified() const { return !donation_events_.empty(); }
 
 bool State::is_worse_than(const State& other) const {
   if (other.donation_events_.empty()) {
@@ -166,9 +212,6 @@ size_t State::num_targets() const { return targets_.size(); }
 size_t State::num_donors() const { return donors_.size(); }
 
 void State::print() const {
-  const auto [val1, val2, val3, val4] = lexicographic_objective_();
-  std::cout << "Objective: " << val1 << ", " << val2 << ", " << val3 << ", "
-            << val4 << std::endl;
   for (size_t i = 0; const auto& tubes : {targets_, donors_}) {
     std::cout << (i++ == 0 ? "Targets:" : "Donors:") << std::endl;
     for (size_t j = 1; const auto& t : tubes) {
@@ -188,6 +231,9 @@ void State::print() const {
     }
   }
   std::cout << "Num tests: " << num_tests_ << std::endl;
+  const auto [val1, val2, val3, val4] = lexicographic_objective_();
+  std::cout << "Objective: " << val1 << ", " << val2 << ", " << val3 << ", "
+            << val4 << std::endl;
 }
 
 std::vector<DonationEvent> State::get_donation_events() const {

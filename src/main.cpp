@@ -66,7 +66,7 @@ int main(int argc, char* argv[]) {
     */
   }
 
-  State state(std::move(targets), std::move(donors));
+  State state(std::move(donors), std::move(targets));
   std::cout << "Initial state:" << std::endl;
   state.print();
   auto best_state = Solver::solve(std::move(state), max_depth);

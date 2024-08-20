@@ -81,7 +81,7 @@ function solveProblem() {
     const donorData = getTubeData('donorInputs');
     const targetData = getTubeData('targetInputs');
     const depthLeft = parseInt(document.getElementById('depthLeft').value);
-    const maxTests = 1e8;
+    const maxTests = 1e7;
 
     worker.postMessage({
         type: 'solve',
@@ -172,8 +172,12 @@ addTube('donor', 12, 232);
 addTube('donor', 12, 232);
 addTube('donor', 10, 300);
 addTube('donor', 10, 300);
+addTube('donor', 12, 232);
+addTube('donor', 12, 232);
 
 addTube('target', 12, 100, 200);
 addTube('target', 12, 80, 200);
 addTube('target', 8, 70, 300);
 addTube('target', 8, 100, 300);
+addTube('target', 10, 100, 200);
+addTube('target', 10, 100, 200);
