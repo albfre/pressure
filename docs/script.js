@@ -31,9 +31,9 @@ function addTube(type, volume, pressure, maxPressure = 0) {
     const row = table.insertRow();
     row.innerHTML = `
         <td><span class="tubeName">${type.charAt(0).toUpperCase()}${rowCount}</span></td>
-        <td><input type="number" class="volume" value="${volume}"></td>
-        <td><input type="number" class="pressure" value="${pressure}"></td>
-        ${type === 'target' ? '<td><input type="number" class="maxPressure" value="' + maxPressure + '"></td>' : ''}
+        <td><input type="number" class="volume" value="${volume}" onfocus="this.select()"></td>
+        <td><input type="number" class="pressure" value="${pressure}" onfocus="this.select()"></td>
+        ${type === 'target' ? '<td><input type="number" class="maxPressure" value="' + maxPressure + '" onfocus="this.select()"></td>' : ''}
         <td><span class="finalPressure">-</span></td>
         <td><button class="remove-tube" onclick="removeTube(this)">×</button></td>
     `;
@@ -81,7 +81,7 @@ function solveProblem() {
     const donorData = getTubeData('donorInputs');
     const targetData = getTubeData('targetInputs');
     const depthLeft = parseInt(document.getElementById('depthLeft').value);
-    const maxTests = 1e7;
+    const maxTests = 2e7;
 
     worker.postMessage({
         type: 'solve',
